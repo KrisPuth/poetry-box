@@ -5,8 +5,8 @@ let poems = [
   { language: 'zh', period: '1800', text: '落紅不是無情物，\n化作春泥更護花。', author: '龔自珍', title: '〈己亥雜詩〉', year: '1839' },
   { language: 'zh', period: '1800', text: '我手寫我口，\n古豈能拘牽？', author: '黃遵憲', title: '〈雜感〉', year: '1897' },
   { language: 'zh', period: '1900', text: '悄悄的我走了，\n正如我悄悄的來；\n我揮一揮衣袖，\n不帶走一片雲彩。', author: '徐志摩', title: '〈再別康橋〉', year: '1928' },
-  { language: 'zh', period: '1900', text: '黑夜給了我黑色的眼睛，\n我卻用它尋找光明。', author: '顧城', title: '〈一代人〉', year: '1979' },
-  { language: 'zh', period: '1900', text: '卑微的夢想持續燃燒，\n也能成就一片星光。', author: '汪國真', title: '〈熱愛生命〉', year: '1980s' },
+  { language: 'zh', period: '1900', text: '兩個黃蝴蝶，\n雙雙飛上天。\n不知為甚麼，\n一個忽飛還。', author: '胡適', title: '〈蝴蝶〉', year: '1917' },
+  { language: 'zh', period: '1900', text: '醉過才知酒濃，\n愛過才知情重；\n你不能做我的詩，\n正如我不能做你的夢。', author: '胡適', title: '〈醉〉', year: '1917' },
   { language: 'zh', period: '2000', text: '把今天折成一隻小船，\n放進明天尚未命名的海。', author: '詩歌盲盒', title: '〈給未知〉', year: '2026' },
   { language: 'en', period: '1600', text: 'Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate.', author: 'William Shakespeare', title: 'Sonnet 18', year: '1609' },
   { language: 'en', period: '1700', text: 'To see a World in a Grain of Sand\nAnd a Heaven in a Wild Flower', author: 'William Blake', title: 'Auguries of Innocence', year: 'c. 1803' },
@@ -15,7 +15,7 @@ let poems = [
   { language: 'en', period: '1800', text: 'If you can meet with Triumph and Disaster\nAnd treat those two impostors just the same;', author: 'Rudyard Kipling', title: 'If—', year: '1895' },
   { language: 'en', period: '1900', text: 'The woods are lovely, dark and deep,\nBut I have promises to keep,\nAnd miles to go before I sleep,\nAnd miles to go before I sleep.', author: 'Robert Frost', title: 'Stopping by Woods on a Snowy Evening', year: '1923' },
   { language: 'en', period: '1900', text: 'I have measured out my life\nwith coffee spoons;', author: 'T. S. Eliot', title: 'The Love Song of J. Alfred Prufrock', year: '1915' },
-  { language: 'en', period: '1900', text: 'Tell me, what is it you plan to do\nwith your one wild and precious life?', author: 'Mary Oliver', title: 'The Summer Day', year: '1990' },
+  { language: 'en', period: '1900', text: 'A poem is a walk,\na piece of quiet weather\nkept in the palm.', author: 'Poetry Box', title: 'A Small Weather', year: '2026' },
   { language: 'en', period: '2000', text: 'Let the small, good things\nfind a home in you.', author: 'Poetry Box', title: 'For Today', year: '2026' }
 ];
 poems.push(
