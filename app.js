@@ -18,6 +18,17 @@ let poems = [
   { language: 'en', period: '1900', text: 'Tell me, what is it you plan to do\nwith your one wild and precious life?', author: 'Mary Oliver', title: 'The Summer Day', year: '1990' },
   { language: 'en', period: '2000', text: 'Let the small, good things\nfind a home in you.', author: 'Poetry Box', title: 'For Today', year: '2026' }
 ];
+poems.push(
+  {language:'zh',period:'pre-qin-nanbei',style:'classical',text:'關關雎鳩，\n在河之洲。\n窈窕淑女，\n君子好逑。',author:'佚名',title:'〈關雎〉',year:'春秋時期'},
+  {language:'zh',period:'pre-qin-nanbei',style:'classical',text:'青青河畔草，\n鬱鬱園中柳。\n盈盈樓上女，\n皎皎當窗牖。',author:'佚名',title:'〈古詩十九首〉',year:'東漢'},
+  {language:'zh',period:'pre-qin-nanbei',style:'classical',text:'江南可採蓮，\n蓮葉何田田。\n魚戲蓮葉間。',author:'佚名',title:'〈江南〉',year:'漢樂府'},
+  {language:'zh',period:'sui-tang',style:'classical',text:'海上生明月，\n天涯共此時。\n情人怨遙夜，\n竟夕起相思。',author:'張九齡',title:'〈望月懷遠〉',year:'唐'},
+  {language:'zh',period:'sui-tang',style:'classical',text:'大漠孤煙直，\n長河落日圓。',author:'王維',title:'〈使至塞上〉',year:'唐'},
+  {language:'zh',period:'sui-tang',style:'classical',text:'會當凌絕頂，\n一覽眾山小。',author:'杜甫',title:'〈望嶽〉',year:'唐'},
+  {language:'zh',period:'song-yuan-ming-qing',style:'classical',text:'大江東去，浪淘盡，\n千古風流人物。',author:'蘇軾',title:'〈念奴嬌·赤壁懷古〉',year:'宋'},
+  {language:'zh',period:'song-yuan-ming-qing',style:'classical',text:'山重水複疑無路，\n柳暗花明又一村。',author:'陸游',title:'〈遊山西村〉',year:'宋'},
+  {language:'zh',period:'song-yuan-ming-qing',style:'classical',text:'我見青山多嫵媚，\n料青山見我應如是。',author:'辛棄疾',title:'〈賀新郎〉',year:'宋'}
+);
 poems.forEach(poem => { poem.style = Number(poem.period) >= 1900 ? 'modern' : 'classical'; });
 // Online deployments load the maintainable database. Opening index.html directly still works with the built-in fallback above.
 fetch('data/poems.json').then(response => response.ok ? response.json() : Promise.reject()).then(data => { poems = data; }).catch(() => {});
@@ -29,6 +40,8 @@ let selectedLength = 'excerpt';
 let previousIndex = -1;
 let currentPoem = null;
 const languageLabels = { zh: '中文詩歌', en: 'ENGLISH POETRY' };
+const periodLabels = { 'pre-qin-nanbei':'春秋至南北朝', 'sui-tang':'隋唐', 'song-yuan-ming-qing':'宋元明清' };
+const periodLabel = period => periodLabels[period] || `${period}s`;
 const storage = { favourites: 'poetry-box-favourites', reflections: 'poetry-box-reflections', history: 'poetry-box-history', theme: 'poetry-box-theme' };
 const readStore = key => JSON.parse(localStorage.getItem(key) || '[]');
 const writeStore = (key, value) => localStorage.setItem(key, JSON.stringify(value));
@@ -79,7 +92,7 @@ function drawPoem(available, isRandom = false) {
   const displayText = selectedLength === 'full' ? (poem.fullText || poem.text) : (poem.excerpt || poem.text);
   document.getElementById('cardLanguage').textContent = languageLabels[poem.language];
   document.getElementById('cardLength').textContent = selectedLength === 'full' ? '全首' : '詩選';
-  document.getElementById('cardPeriod').textContent = poem.period + 's';
+  document.getElementById('cardPeriod').textContent = periodLabel(poem.period);
   document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${displayText}</p>`;
   document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`;
   document.getElementById('favouriteButton').hidden = false; document.getElementById('reflectionHint').textContent = `寫給〈${poem.title}〉`;
