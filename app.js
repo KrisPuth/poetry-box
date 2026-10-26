@@ -122,6 +122,7 @@ function drawPoem(available, isRandom = false) {
   document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${displayText}</p>`;
   document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`;
   document.getElementById('favouriteButton').hidden = false; document.getElementById('reflectionHint').textContent = `寫給〈${poem.title}〉`;
+  document.getElementById('shareImageButton').hidden = false;
   card.classList.remove('is-empty', 'reveal'); void card.offsetWidth; card.classList.add('reveal'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); updateFavouriteButton(); saveHistory(poem);
   if (document.getElementById('avoidRepeats').checked) markSeen(poem);
 }
@@ -130,6 +131,7 @@ function showExhausted() {
   document.getElementById('cardLanguage').textContent = 'POETRY BOX'; document.getElementById('cardLength').textContent = '此類別'; document.getElementById('cardPeriod').textContent = '完成';
   document.getElementById('poemContent').innerHTML = '<p class="placeholder">到底了～<br />你已看完這個類別的所有詩。</p>';
   document.getElementById('poemCredit').innerHTML = '<span>可以重設此類別，或換一個時期繼續探索。</span>'; document.getElementById('favouriteButton').hidden = true;
+  document.getElementById('shareImageButton').hidden = true;
   card.classList.remove('is-empty'); card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -182,12 +184,39 @@ document.getElementById('favouriteList').addEventListener('click', event => {
   const item = event.target.closest('[data-index]'); if (!item) return; const poem = readStore(storage.favourites)[item.dataset.index];
   currentPoem = poem; selectedLanguage = poem.language; selectedPeriod = poem.period; selectChoice('languageChoices','language',selectedLanguage); selectChoice('periodChoices','period',selectedPeriod);
   document.getElementById('cardLanguage').textContent = languageLabels[poem.language]; document.getElementById('cardPeriod').textContent = poem.period + 's';
-  document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${poem.text}</p>`; document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`; document.getElementById('favouriteButton').hidden = false; updateFavouriteButton();
+  document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${poem.text}</p>`; document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`; document.getElementById('favouriteButton').hidden = false; document.getElementById('shareImageButton').hidden = false; updateFavouriteButton();
 });
 document.getElementById('historyList').addEventListener('click', event => {
   const item = event.target.closest('[data-history]'); if (!item) return; const poem = readStore(storage.history)[item.dataset.history].poem;
   currentPoem = poem; selectedLanguage = poem.language; selectedPeriod = poem.period; selectedStyle = poem.style; selectChoice('languageChoices','language',selectedLanguage); selectChoice('periodChoices','period',selectedPeriod); selectChoice('styleChoices','style',selectedStyle);
   document.getElementById('cardLanguage').textContent = languageLabels[poem.language]; document.getElementById('cardPeriod').textContent = poem.period + 's'; document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${poem.text}</p>`; document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`; document.getElementById('favouriteButton').hidden = false; updateFavouriteButton();
+  document.getElementById('shareImageButton').hidden = false;
+});
+function wrapCanvasText(context, text, x, y, maxWidth, lineHeight) {
+  const paragraphs = text.split('\n'); let cursor = y;
+  paragraphs.forEach(paragraph => {
+    let line = '';
+    [...paragraph].forEach(char => { const candidate = line + char; if (context.measureText(candidate).width > maxWidth && line) { context.fillText(line, x, cursor); cursor += lineHeight; line = char; } else line = candidate; });
+    if (line) { context.fillText(line, x, cursor); cursor += lineHeight; }
+    cursor += lineHeight * .32;
+  });
+  return cursor;
+}
+document.getElementById('shareImageButton').addEventListener('click', () => {
+  if (!currentPoem) return;
+  const button = document.getElementById('shareImageButton'), original = button.textContent;
+  button.textContent = '正在製作…'; button.disabled = true;
+  const canvas = document.createElement('canvas'); canvas.width = 1080; canvas.height = 1350;
+  const context = canvas.getContext('2d'); context.fillStyle = '#f5f0e5'; context.fillRect(0, 0, 1080, 1350);
+  context.fillStyle = '#df633d'; context.font = '500 28px monospace'; context.fillText('POETRY BOX  ·  A SMALL ENCOUNTER', 90, 108);
+  context.strokeStyle = '#d7cec0'; context.lineWidth = 2; context.beginPath(); context.moveTo(90, 150); context.lineTo(990, 150); context.stroke();
+  context.fillStyle = '#213d36'; context.font = currentPoem.language === 'en' ? '500 54px Georgia' : '500 58px "Noto Serif TC", serif';
+  const text = selectedLength === 'full' ? (currentPoem.fullText || currentPoem.text) : (currentPoem.excerpt || currentPoem.text);
+  let end = wrapCanvasText(context, text, 90, 305, 880, currentPoem.language === 'en' ? 76 : 88);
+  context.strokeStyle = '#d7cec0'; context.beginPath(); context.moveTo(90, Math.min(end + 48, 1120)); context.lineTo(990, Math.min(end + 48, 1120)); context.stroke();
+  context.fillStyle = '#213d36'; context.font = currentPoem.language === 'en' ? '500 31px Georgia' : '500 32px "Noto Serif TC", serif'; context.fillText(`${currentPoem.author} · ${currentPoem.title}`, 90, Math.min(end + 105, 1180));
+  context.fillStyle = '#68746d'; context.font = '400 24px sans-serif'; context.fillText('poetry box', 90, 1260);
+  canvas.toBlob(blob => { const url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = `poetry-box-${Date.now()}.png`; link.click(); URL.revokeObjectURL(url); button.textContent = original; button.disabled = false; }, 'image/png');
 });
 document.getElementById('reflectionForm').addEventListener('submit', event => {
   event.preventDefault(); const input = document.getElementById('reflectionInput'), note = input.value.trim(); if (!currentPoem || !note) return;
