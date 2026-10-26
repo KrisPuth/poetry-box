@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="詩歌盲盒：隨機抽取跨越時代與語言的詩歌。" />
+    <title>詩歌盲盒 · Poetry Box</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="詩歌盲盒首頁"><span class="brand-mark">P</span><span>詩歌盲盒</span></a>
+        <div class="header-actions"><p class="topbar-note">打開未知的字句</p><button class="theme-toggle" id="themeToggle" type="button" aria-label="切換深色模式">☾ <span>深色</span></button></div>
+      </header>
+
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow">POETRY BOX · RANDOM VERSE</p>
+          <h1>下一首詩，<br /><em>會來自哪個時代？</em></h1>
+          <p class="intro">選擇語言與年代，讓偶然為你抽出一段剛好需要讀到的詩。</p>
+        </div>
+        <div class="sun-orbit" aria-hidden="true"><span>✦</span></div>
+      </section>
+
+      <section class="picker" aria-labelledby="picker-title">
+        <div class="picker-heading"><p class="step">01 / 設定盲盒</p><h2 id="picker-title">你想讀甚麼？</h2></div>
+        <div class="filters">
+          <fieldset>
+            <legend>語言 / Language</legend>
+            <div class="choice-row" id="languageChoices">
+              <button class="choice active" type="button" data-language="zh">中文</button>
+              <button class="choice" type="button" data-language="en">English</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>時期 / Period</legend>
+            <div class="choice-row period-row" id="periodChoices">
+              <button class="choice" type="button" data-period="1600">1600s</button>
+              <button class="choice" type="button" data-period="1700">1700s</button>
+              <button class="choice active" type="button" data-period="1800">1800s</button>
+              <button class="choice" type="button" data-period="1900">1900s</button>
+              <button class="choice" type="button" data-period="2000">2000s</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>詩歌類型 / Style</legend>
+            <div class="choice-row" id="styleChoices">
+              <button class="choice active" type="button" data-style="all">不限</button>
+              <button class="choice" type="button" data-style="classical">古典</button>
+              <button class="choice" type="button" data-style="modern">現代</button>
+            </div>
+          </fieldset>
+        </div>
+        <button class="draw-button" id="drawButton" type="button"><span class="draw-icon">✦</span> 抽一首詩 <span class="arrow">→</span></button>
+      </section>
+
+      <section class="poem-stage" aria-live="polite" aria-atomic="true">
+        <p class="step">02 / 今日的相遇</p>
+        <article class="poem-card is-empty" id="poemCard">
+          <div class="card-top"><span id="cardLanguage">POETRY BOX</span><span id="cardPeriod">?</span></div>
+          <div class="poem-content" id="poemContent">
+            <p class="placeholder">按下「抽一首詩」<br />讓字句自己找上你。</p>
+          </div>
+          <footer class="poem-credit" id="poemCredit"></footer>
+          <button class="favourite-button" id="favouriteButton" type="button" hidden>♡ 收藏這首詩</button>
+        </article>
+      </section>
+      <section class="memory-grid">
+        <section class="memory-panel" aria-labelledby="reflection-title">
+          <p class="step">03 / 留下感受</p><h2 id="reflection-title">這首詩令你想到甚麼？</h2>
+          <form id="reflectionForm"><textarea id="reflectionInput" maxlength="280" placeholder="寫下一句感受，留給未來的自己⋯⋯" aria-label="你的感受"></textarea><div class="form-footer"><span id="reflectionHint">抽到詩後才可記錄</span><button class="small-button" type="submit">儲存感受</button></div></form>
+          <div class="reflection-list" id="reflectionList"></div>
+        </section>
+        <section class="memory-panel favourites-panel" aria-labelledby="favourites-title">
+          <p class="step">04 / 你的書籤</p><h2 id="favourites-title">收藏的詩</h2>
+          <div class="favourite-list" id="favouriteList"><p class="empty-state">還未收藏任何詩。<br />遇到喜歡的，按一下 ♡ 吧。</p></div>
+        </section>
+        <section class="memory-panel" aria-labelledby="history-title">
+          <p class="step">05 / 讀過的字句</p><h2 id="history-title">閱讀歷史</h2>
+          <div class="history-list" id="historyList"><p class="empty-state">你的抽詩足跡會在這裡出現。</p></div>
+        </section>
+      </section>
+
+      <footer class="site-footer"><span>© 2026 POETRY BOX</span><span>為偶遇而設</span></footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
+
