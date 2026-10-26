@@ -18,6 +18,23 @@ let poems = [
   { language: 'en', period: '1900', text: 'A poem is a walk,\na piece of quiet weather\nkept in the palm.', author: 'Poetry Box', title: 'A Small Weather', year: '2026' },
   { language: 'en', period: '2000', text: 'Let the small, good things\nfind a home in you.', author: 'Poetry Box', title: 'For Today', year: '2026' }
 ];
+// Large public-domain collections are split by category, so a visitor downloads only what they draw.
+const categoryFiles = {
+  'zh-pre-qin-nanbei': 'data/classical/pre-qin-nanbei.json',
+  'zh-sui-tang': 'data/classical/sui-tang.json',
+  'zh-song-yuan-ming-qing': 'data/classical/song-yuan-ming-qing.json'
+};
+const loadedCategories = new Set();
+async function ensureCategoryLoaded(language, period) {
+  const key = `${language}-${period}`, file = categoryFiles[key];
+  if (!file || loadedCategories.has(key)) return;
+  const response = await fetch(file);
+  if (!response.ok) throw new Error(`Could not load ${key}`);
+  const records = await response.json();
+  const existing = new Set(poems.map(poem => poem.id || `${poem.author}-${poem.title}-${poem.period}`));
+  poems.push(...records.filter(poem => !existing.has(poem.id || `${poem.author}-${poem.title}-${poem.period}`)));
+  loadedCategories.add(key);
+}
 poems.push(
   {language:'zh',period:'pre-qin-nanbei',style:'classical',text:'關關雎鳩，\n在河之洲。\n窈窕淑女，\n君子好逑。',author:'佚名',title:'〈關雎〉',year:'春秋時期'},
   {language:'zh',period:'pre-qin-nanbei',style:'classical',text:'青青河畔草，\n鬱鬱園中柳。\n盈盈樓上女，\n皎皎當窗牖。',author:'佚名',title:'〈古詩十九首〉',year:'東漢'},
@@ -111,12 +128,22 @@ function showExhausted() {
   card.classList.remove('is-empty'); card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-document.getElementById('drawButton').addEventListener('click', () => {
+document.getElementById('drawButton').addEventListener('click', async () => {
+  const button = document.getElementById('drawButton'), original = button.innerHTML;
+  button.disabled = true; button.textContent = '正在打開詩集…';
+  try { await ensureCategoryLoaded(selectedLanguage, selectedPeriod); }
+  catch { button.textContent = '詩集未能載入，請再試一次'; setTimeout(() => { button.innerHTML = original; button.disabled = false; }, 1800); return; }
+  button.innerHTML = original; button.disabled = false;
   let available = poems.filter(poem => poem.language === selectedLanguage && poem.period === selectedPeriod && (selectedStyle === 'all' || poem.style === selectedStyle));
   if (document.getElementById('avoidRepeats').checked) available = unseenOnly(available);
   drawPoem(available);
 });
-document.getElementById('randomButton').addEventListener('click', () => { let available = poems; if (document.getElementById('avoidRepeats').checked) available = unseenOnly(available); drawPoem(available, true); });
+document.getElementById('randomButton').addEventListener('click', async () => {
+  const choices = Object.keys(categoryFiles).map(key => key.split('-').slice(0, 1).concat([key.replace(/^zh-/, '')]));
+  const [language, period] = choices[Math.floor(Math.random() * choices.length)];
+  try { await ensureCategoryLoaded(language, period); } catch { /* fall back to the starter collection */ }
+  let available = poems; if (document.getElementById('avoidRepeats').checked) available = unseenOnly(available); drawPoem(available, true);
+});
 document.getElementById('resetSeenButton').addEventListener('click', () => { const seen = seenPoems(); delete seen[`${selectedLanguage}-${selectedPeriod}`]; localStorage.setItem(storage.seen, JSON.stringify(seen)); });
 
 function updateFavouriteButton() {
