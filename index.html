@@ -54,14 +54,21 @@
               <button class="choice" type="button" data-style="modern">現代</button>
             </div>
           </fieldset>
+          <fieldset>
+            <legend>閱讀方式 / Reading</legend>
+            <div class="choice-row" id="lengthChoices">
+              <button class="choice active" type="button" data-length="excerpt">詩選</button>
+              <button class="choice" type="button" data-length="full">全首</button>
+            </div>
+          </fieldset>
         </div>
-        <button class="draw-button" id="drawButton" type="button"><span class="draw-icon">✦</span> 抽一首詩 <span class="arrow">→</span></button>
+        <div class="draw-actions"><button class="random-button" id="randomButton" type="button">⌘ 全隨機</button><button class="draw-button" id="drawButton" type="button"><span class="draw-icon">✦</span> 抽一首詩 <span class="arrow">→</span></button></div>
       </section>
 
       <section class="poem-stage" aria-live="polite" aria-atomic="true">
         <p class="step">02 / 今日的相遇</p>
         <article class="poem-card is-empty" id="poemCard">
-          <div class="card-top"><span id="cardLanguage">POETRY BOX</span><span id="cardPeriod">?</span></div>
+          <div class="card-top"><span id="cardLanguage">POETRY BOX</span><span><span id="cardLength">詩選</span> · <span id="cardPeriod">?</span></span></div>
           <div class="poem-content" id="poemContent">
             <p class="placeholder">按下「抽一首詩」<br />讓字句自己找上你。</p>
           </div>
