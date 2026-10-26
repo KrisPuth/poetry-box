@@ -25,6 +25,7 @@ fetch('data/poems.json').then(response => response.ok ? response.json() : Promis
 let selectedLanguage = 'zh';
 let selectedPeriod = '1800';
 let selectedStyle = 'all';
+let selectedLength = 'excerpt';
 let previousIndex = -1;
 let currentPoem = null;
 const languageLabels = { zh: '中文詩歌', en: 'ENGLISH POETRY' };
@@ -56,29 +57,40 @@ document.getElementById('styleChoices').addEventListener('click', event => {
   selectedStyle = button.dataset.style;
   selectChoice('styleChoices', 'style', selectedStyle);
 });
+document.getElementById('lengthChoices').addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (!button) return;
+  selectedLength = button.dataset.length;
+  selectChoice('lengthChoices', 'length', selectedLength);
+});
 
-document.getElementById('drawButton').addEventListener('click', () => {
-  const available = poems.filter(poem => poem.language === selectedLanguage && poem.period === selectedPeriod && (selectedStyle === 'all' || poem.style === selectedStyle));
-  if (!available.length) { alert('這個年代暫時未有此類型詩歌，請選擇「不限」或另一個年代。'); return; }
+function drawPoem(available, isRandom = false) {
+  if (!available.length) { alert('這個組合暫時未有詩歌，請選擇另一個年代或「不限」。'); return; }
   let index = Math.floor(Math.random() * available.length);
   if (available.length > 1 && available[index] === poems[previousIndex]) index = (index + 1) % available.length;
   const poem = available[index];
   currentPoem = poem;
   previousIndex = poems.indexOf(poem);
+  if (isRandom) {
+    selectedLanguage = poem.language; selectedPeriod = poem.period; selectedStyle = poem.style;
+    selectChoice('languageChoices', 'language', selectedLanguage); selectChoice('periodChoices', 'period', selectedPeriod); selectChoice('styleChoices', 'style', selectedStyle);
+  }
   const card = document.getElementById('poemCard');
+  const displayText = selectedLength === 'full' ? (poem.fullText || poem.text) : (poem.excerpt || poem.text);
   document.getElementById('cardLanguage').textContent = languageLabels[poem.language];
+  document.getElementById('cardLength').textContent = selectedLength === 'full' ? '全首' : '詩選';
   document.getElementById('cardPeriod').textContent = poem.period + 's';
-  document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${poem.text}</p>`;
+  document.getElementById('poemContent').innerHTML = `<p class="poem-text ${poem.language === 'en' ? 'en' : ''}">${displayText}</p>`;
   document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`;
-  document.getElementById('favouriteButton').hidden = false;
-  document.getElementById('reflectionHint').textContent = `寫給〈${poem.title}〉`;
-  card.classList.remove('is-empty', 'reveal');
-  void card.offsetWidth;
-  card.classList.add('reveal');
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  updateFavouriteButton();
-  saveHistory(poem);
+  document.getElementById('favouriteButton').hidden = false; document.getElementById('reflectionHint').textContent = `寫給〈${poem.title}〉`;
+  card.classList.remove('is-empty', 'reveal'); void card.offsetWidth; card.classList.add('reveal'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); updateFavouriteButton(); saveHistory(poem);
+}
+
+document.getElementById('drawButton').addEventListener('click', () => {
+  const available = poems.filter(poem => poem.language === selectedLanguage && poem.period === selectedPeriod && (selectedStyle === 'all' || poem.style === selectedStyle));
+  drawPoem(available);
 });
+document.getElementById('randomButton').addEventListener('click', () => drawPoem(poems, true));
 
 function updateFavouriteButton() {
   const button = document.getElementById('favouriteButton');
