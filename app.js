@@ -5,6 +5,8 @@ let poems = [
   { language: 'zh', period: '1800', text: '落紅不是無情物，\n化作春泥更護花。', author: '龔自珍', title: '〈己亥雜詩〉', year: '1839' },
   { language: 'zh', period: '1800', text: '我手寫我口，\n古豈能拘牽？', author: '黃遵憲', title: '〈雜感〉', year: '1897' },
   { language: 'zh', period: '1900', text: '悄悄的我走了，\n正如我悄悄的來；\n我揮一揮衣袖，\n不帶走一片雲彩。', author: '徐志摩', title: '〈再別康橋〉', year: '1928' },
+  { language: 'zh', period: '1900', text: '兩個黃蝴蝶，\n雙雙飛上天。\n不知為甚麼，\n一個忽飛還。', author: '胡適', title: '〈蝴蝶〉', year: '1917' },
+  { language: 'zh', period: '1900', text: '醉過才知酒濃，\n愛過才知情重；\n你不能做我的詩，\n正如我不能做你的夢。', author: '胡適', title: '〈醉〉', year: '1917' },
   { language: 'zh', period: '2000', text: '把今天折成一隻小船，\n放進明天尚未命名的海。', author: '詩歌盲盒', title: '〈給未知〉', year: '2026' },
   { language: 'en', period: '1600', text: 'Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate.', author: 'William Shakespeare', title: 'Sonnet 18', year: '1609' },
   { language: 'en', period: '1700', text: 'To see a World in a Grain of Sand\nAnd a Heaven in a Wild Flower', author: 'William Blake', title: 'Auguries of Innocence', year: 'c. 1803' },
