@@ -26,6 +26,7 @@ const categoryFiles = {
 };
 const loadedCategories = new Set();
 async function ensureCategoryLoaded(language, period) {
+  await starterPoemsPromise;
   const key = `${language}-${period}`, file = categoryFiles[key];
   if (!file || loadedCategories.has(key)) return;
   const response = await fetch(file);
@@ -48,7 +49,7 @@ poems.push(
 );
 poems.forEach(poem => { poem.style = Number(poem.period) >= 1900 ? 'modern' : 'classical'; });
 // Online deployments load the maintainable database. Opening index.html directly still works with the built-in fallback above.
-fetch('data/poems.json').then(response => response.ok ? response.json() : Promise.reject()).then(data => { poems = data; }).catch(() => {});
+const starterPoemsPromise = fetch('data/poems.json').then(response => response.ok ? response.json() : Promise.reject()).then(data => { poems = data; }).catch(() => {});
 
 let selectedLanguage = 'zh';
 let selectedPeriod = '1800';
