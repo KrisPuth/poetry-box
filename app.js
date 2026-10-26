@@ -42,10 +42,14 @@ let currentPoem = null;
 const languageLabels = { zh: '中文詩歌', en: 'ENGLISH POETRY' };
 const periodLabels = { 'pre-qin-nanbei':'春秋至南北朝', 'sui-tang':'隋唐', 'song-yuan-ming-qing':'宋元明清' };
 const periodLabel = period => periodLabels[period] || `${period}s`;
-const storage = { favourites: 'poetry-box-favourites', reflections: 'poetry-box-reflections', history: 'poetry-box-history', theme: 'poetry-box-theme' };
+const storage = { favourites: 'poetry-box-favourites', reflections: 'poetry-box-reflections', history: 'poetry-box-history', seen: 'poetry-box-seen', theme: 'poetry-box-theme' };
 const readStore = key => JSON.parse(localStorage.getItem(key) || '[]');
 const writeStore = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 const poemKey = poem => `${poem.language}-${poem.period}-${poem.author}-${poem.title}`;
+const categoryKey = poem => `${poem.language}-${poem.period}`;
+const seenPoems = () => JSON.parse(localStorage.getItem(storage.seen) || '{}');
+function markSeen(poem) { const seen = seenPoems(), key = categoryKey(poem); seen[key] = [...new Set([...(seen[key] || []), poemKey(poem)])]; localStorage.setItem(storage.seen, JSON.stringify(seen)); }
+function unseenOnly(poemsToFilter) { const seen = seenPoems(); return poemsToFilter.filter(poem => !(seen[categoryKey(poem)] || []).includes(poemKey(poem))); }
 
 function selectChoice(group, key, value) {
   document.querySelectorAll(`#${group} .choice`).forEach(button => button.classList.toggle('active', button.dataset[key] === value));
@@ -78,7 +82,7 @@ document.getElementById('lengthChoices').addEventListener('click', event => {
 });
 
 function drawPoem(available, isRandom = false) {
-  if (!available.length) { alert('這個組合暫時未有詩歌，請選擇另一個年代或「不限」。'); return; }
+  if (!available.length) { showExhausted(); return; }
   let index = Math.floor(Math.random() * available.length);
   if (available.length > 1 && available[index] === poems[previousIndex]) index = (index + 1) % available.length;
   const poem = available[index];
@@ -97,13 +101,23 @@ function drawPoem(available, isRandom = false) {
   document.getElementById('poemCredit').innerHTML = `<span><strong>${poem.author}</strong> · ${poem.title}</span><span>${poem.year}</span>`;
   document.getElementById('favouriteButton').hidden = false; document.getElementById('reflectionHint').textContent = `寫給〈${poem.title}〉`;
   card.classList.remove('is-empty', 'reveal'); void card.offsetWidth; card.classList.add('reveal'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); updateFavouriteButton(); saveHistory(poem);
+  if (document.getElementById('avoidRepeats').checked) markSeen(poem);
+}
+function showExhausted() {
+  const card = document.getElementById('poemCard'); currentPoem = null;
+  document.getElementById('cardLanguage').textContent = 'POETRY BOX'; document.getElementById('cardLength').textContent = '此類別'; document.getElementById('cardPeriod').textContent = '完成';
+  document.getElementById('poemContent').innerHTML = '<p class="placeholder">到底了～<br />你已看完這個類別的所有詩。</p>';
+  document.getElementById('poemCredit').innerHTML = '<span>可以重設此類別，或換一個時期繼續探索。</span>'; document.getElementById('favouriteButton').hidden = true;
+  card.classList.remove('is-empty'); card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 document.getElementById('drawButton').addEventListener('click', () => {
-  const available = poems.filter(poem => poem.language === selectedLanguage && poem.period === selectedPeriod && (selectedStyle === 'all' || poem.style === selectedStyle));
+  let available = poems.filter(poem => poem.language === selectedLanguage && poem.period === selectedPeriod && (selectedStyle === 'all' || poem.style === selectedStyle));
+  if (document.getElementById('avoidRepeats').checked) available = unseenOnly(available);
   drawPoem(available);
 });
-document.getElementById('randomButton').addEventListener('click', () => drawPoem(poems, true));
+document.getElementById('randomButton').addEventListener('click', () => { let available = poems; if (document.getElementById('avoidRepeats').checked) available = unseenOnly(available); drawPoem(available, true); });
+document.getElementById('resetSeenButton').addEventListener('click', () => { const seen = seenPoems(); delete seen[`${selectedLanguage}-${selectedPeriod}`]; localStorage.setItem(storage.seen, JSON.stringify(seen)); });
 
 function updateFavouriteButton() {
   const button = document.getElementById('favouriteButton');
